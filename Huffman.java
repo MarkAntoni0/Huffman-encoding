@@ -5,6 +5,7 @@
 // https://www.linkedin.com/in/mark-antonio-b2777310a/  //
 // Feel free to use or edit the code                    //
 // No copy rights                                       //
+// Update the globalLocation variable to run            //
 //////////////////////////////////////////////////////////
 package Code;
 
@@ -15,18 +16,63 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 
 class Huffman {
+	
+//  Consider updating the following path to match your text file location 
+	static String globalLocation = "/home/ironhide/eclipse-workspace/HuffmanFinalProject/src/Code/characterSet";
+//  The string builder below aims to keep the encoded characters once they are discovered in the dictionary
+	static StringBuilder toBeDecodedString = new StringBuilder();
+//	The dictionary is being build once the print function discovers a new encoding for a letter
+	static HashMap<Character, String> toBeDeencodedDictionary = new HashMap<Character, String>();
 
+	
+	
+//	The following functions aims to create a dictionary out of the discovered characters encoding
+	public static void buildEncodedText() throws IOException {
+		Path filePath = Path.of(globalLocation);
+		String content = Files.readString(filePath);
+		
+		for(int i=0;i<content.length()-1;i++) {
+			toBeDecodedString.append(toBeDeencodedDictionary.get(content.charAt(i)));
+		}
+	}
+	
+	
+//	The following function aims to decode the values in the toBeDecodedString global variable with the assistance
+//	of the tree, thus we pass the original tree to it
+	public static void decodefinalCode(String encodedString, Node rootNode) {
+	    StringBuilder decodedText = new StringBuilder();
+	    Node currentNodetoBeDecodedString = rootNode;
+	    for (int i = 0; i < encodedString.length(); i++) {
+	    	
+	        if(encodedString.charAt(i) == '1') {
+	        	currentNodetoBeDecodedString = currentNodetoBeDecodedString.right;
+	        }else {
+	        	currentNodetoBeDecodedString = currentNodetoBeDecodedString.left;
+	        }
+	        
+	        if (currentNodetoBeDecodedString.left == null && currentNodetoBeDecodedString.right == null) {
+	            decodedText.append(currentNodetoBeDecodedString.c);
+	            currentNodetoBeDecodedString = rootNode;
+	        }
+	    }
+	    System.out.println("DecodedString text is: "+decodedText);
+	}
+	
 //	The printFinalCode function aims to peint the encoding per character using 
 //	Recursion. 
 //	The function takes the root node which was generated using the main function 
 //	and aims to traverse the nodes in order to generate the encoding.
 //	The String s aims to save the encoding of the last recursion 
 //	while entering the next recursion
+	
 	public static void printFinalCode(Node rootNode, String s) {
 		if (rootNode.left == null && rootNode.right == null && Character.isLetter(rootNode.c)) {
 			System.out.println(rootNode.c + " > " + s);
+			//toBeDecodedString.append(s);
+			toBeDeencodedDictionary.put(rootNode.c, s);
 			return;
 		} else {
 			printFinalCode(rootNode.left, s + "0");
@@ -45,8 +91,8 @@ class Huffman {
 		ArrayList<Character> characters = new ArrayList<Character>();
 		ArrayList<Integer> frequencies = new ArrayList<Integer>();
 		
-//		This path can be changes to match the text file you would like to encode 
-		Path filePath = Path.of("/home/ironhide/eclipse-workspace/HuffmanFinalProject/src/Code/characterSet.txt");
+//		This path can be changed to match the text file you would like to encode 
+		Path filePath = Path.of(globalLocation);
 		String content = Files.readString(filePath);
 
 //		The following lines of code aims to find the frequency of each character in the
@@ -57,7 +103,7 @@ class Huffman {
 		char str1[] = content.toCharArray();                             // Convert the given string into character array
 		for (int i = 0; i < str1.length; i++) {
 			freq[i] = 1;
-			for (int j = i + 1; j < content.length(); j++) {             // Traversing what is after the current character
+			for (int j = i + 1; j < content.length(); j++) {             // Traversing what is after the currentNodetoBeDecodedStringent character
 				if (str1[i] == str1[j]) {
 					freq[i]++;
 					str1[j] = '0';                                       // Set str1[j] to 0 to avoid printing visited character
@@ -127,6 +173,9 @@ class Huffman {
 		System.out.println("");
 		System.out.println("Encoding");
 		printFinalCode(rootNode, "");
+		buildEncodedText();
+		System.out.println("Encoded text is: "+toBeDecodedString);
+		decodefinalCode(toBeDecodedString.toString(), rootNode);
 	}
 }
 
