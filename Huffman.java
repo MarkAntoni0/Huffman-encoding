@@ -26,7 +26,8 @@ class Huffman {
 	static StringBuilder toBeDecodedString = new StringBuilder();
 //	The dictionary is being build once the print function discovers a new encoding for a letter
 	static HashMap<Character, String> toBeDeencodedDictionary = new HashMap<Character, String>();
-
+//  For statistics purposes 
+	static int decodedLength=0;
 	
 	
 //	The following functions aims to create a dictionary out of the discovered characters encoding
@@ -46,7 +47,6 @@ class Huffman {
 	    StringBuilder decodedText = new StringBuilder();
 	    Node currentNodetoBeDecodedString = rootNode;
 	    for (int i = 0; i < encodedString.length(); i++) {
-	    	
 	        if(encodedString.charAt(i) == '1') {
 	        	currentNodetoBeDecodedString = currentNodetoBeDecodedString.right;
 	        }else {
@@ -58,10 +58,11 @@ class Huffman {
 	            currentNodetoBeDecodedString = rootNode;
 	        }
 	    }
-	    System.out.println("DecodedString text is: "+decodedText);
+	    System.out.println("DecodedString text is :  "+decodedText);
+	    decodedLength=decodedText.length();
 	}
 	
-//	The printFinalCode function aims to peint the encoding per character using 
+//	The printFinalCode function aims to print the encoding per character using 
 //	Recursion. 
 //	The function takes the root node which was generated using the main function 
 //	and aims to traverse the nodes in order to generate the encoding.
@@ -89,7 +90,7 @@ class Huffman {
 		int n = 0;
 
 		ArrayList<Character> characters = new ArrayList<Character>();
-		ArrayList<Integer> frequencies = new ArrayList<Integer>();
+		ArrayList<Integer>  frequencies = new ArrayList<Integer>();
 		
 //		This path can be changed to match the text file you would like to encode 
 		Path filePath = Path.of(globalLocation);
@@ -129,16 +130,15 @@ class Huffman {
 		System.out.println("");
 
 		char[] charArray = new char[characters.size()];                 // preparing array to receive array list values
-		int[] charfreq = new int[frequencies.size()];                   // preparing array to receive array list values
+		int[]   charfreq = new int[frequencies.size()];                 // preparing array to receive array list values
 
 		for (int i = 0; i < n; i++) {                                   // looping over each element and adding them to array
 			charArray[i] = characters.get(i);
-			charfreq[i] = frequencies.get(i);
+			charfreq[i]  = frequencies.get(i);
 		}
 
 //		The priority queue rearrange itself based on a comparison criteria which is given through the comparison
 		PriorityQueue<Node> q = new PriorityQueue<Node>(n, new ComparisonCriteria());
-
 		
 		for (int i = 0; i < n; i++) {                                   // Adding all created nodes to the queue
 			Node newCreatedNode = new Node();
@@ -171,11 +171,15 @@ class Huffman {
 
 		
 		System.out.println("");
-		System.out.println("Encoding");
+		System.out.println("Encoding Dictionary");
 		printFinalCode(rootNode, "");
 		buildEncodedText();
-		System.out.println("Encoded text is: "+toBeDecodedString);
+		System.out.println("Encoded text is       :  "+toBeDecodedString);
 		decodefinalCode(toBeDecodedString.toString(), rootNode);
+		
+		//printing compression statistics
+		System.out.println("Original string size  :  "+(content.length()*8) + " bits");
+		System.out.println("Compressed size       :  "+decodedLength+ "  bits");
 	}
 }
 
